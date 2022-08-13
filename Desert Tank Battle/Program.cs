@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Desert_Tank_Battle
 {
@@ -12,27 +8,14 @@ namespace Desert_Tank_Battle
         {
             Console.WriteLine("DESERT TANK BATTLE");
 
-            Random rnd = new Random();
-            int targetDirection = (rnd.Next(0, 181))-90;
-            double targetDistance = rnd.NextDouble();
+            Tank tank = new Tank(5);
+            Target target = new Target(new Random());
             bool success = false;
 
-            for (int attempts = 0; attempts < 5; attempts++)
+            while (tank.RemainingShots > 0)
             {
-                int attemptDirection;
-                do
-                {
-                    Console.WriteLine("DIRECTION (-90 TO 90) ?");
-                } while (!int.TryParse(Console.ReadLine(), out attemptDirection) || attemptDirection < -90 || attemptDirection > 90);
-
-                int attemptElevation;
-                do
-                {
-                    Console.WriteLine("ELEVATION (0 TO 90) ?");
-                } while (!int.TryParse(Console.ReadLine(), out attemptElevation) || attemptElevation < 0 || attemptElevation > 90);
-
-                double attemptDistance = Math.Sin(2 * (attemptElevation / 180.0 * Math.PI));
-                if (Math.Abs(targetDirection - attemptDirection) < 2 && Math.Abs(targetDistance - attemptDistance) < 0.05)
+                tank.Fire(UserInput.GetDirection(), UserInput.GetElevation());
+                if (target.WasHit(tank.ShotDirection, tank.ShotDistance))
                 {
                     Console.WriteLine("*KABOOOMMM*");
                     Console.WriteLine("YOU'VE DONE IT");
@@ -42,23 +25,23 @@ namespace Desert_Tank_Battle
                 else
                 {
                     Console.Write("MISSILE LANDED ");
-                    if (attemptDirection < targetDirection)
+                    if (tank.ShotDirection < target.Direction)
                     {
                         Console.Write("TO THE LEFT ");
                     }
-                    else if (attemptDirection > targetDirection)
+                    else if (tank.ShotDirection > target.Direction)
                     {
                         Console.Write("TO THE RIGHT ");
                     }
-                    if (Math.Abs(attemptDistance - targetDistance) > 0.05 && attemptDirection != targetDirection)
+                    if (Math.Abs(tank.ShotDistance - target.Distance) > 0.05 && tank.ShotDirection != target.Direction)
                     {
                         Console.Write("AND ");
                     }
-                    if (targetDistance - attemptDistance > 0.05)
+                    if (target.Distance - tank.ShotDistance > 0.05)
                     {
                         Console.Write("NOT FAR ENOUGH");
                     }
-                    else if (attemptDistance - targetDistance > 0.05)
+                    else if (tank.ShotDistance - target.Distance > 0.05)
                     {
                         Console.Write("TOO FAR");
                     }
